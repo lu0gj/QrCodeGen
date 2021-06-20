@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 import static java.lang.Math.max;
 
 public class GfArithmetic {
@@ -25,7 +27,6 @@ public class GfArithmetic {
         }
         this.gfExp[510] = 1;
         this.gfExp[511] = 2;
-
     }
     public int gfAdd(int x, int y){
         // Addition dans les espaces de Galois
@@ -131,43 +132,20 @@ public class GfArithmetic {
          return res;
      }
 
-
-     public int[] polyDiv(int[] p, int[] q)
-     {
-         int l = q.length - 1;
-         int a =this.gfInv(q[l]);
-         int[] p1;
-         int[] q1;
-         int[] d;
-         int[] m;
-         int i;
-         int j;
-
-         p1 = this.polyScal(p,a);
-         q1 = this.polyScal(q,a);
-
-         int [] reste = this.stripPoly(p1);
-
-         l = reste.length;
-         while(l >= q1.length)
-         {
-            i = l - q1.length;
-            m = new int[i + 1];
-            for(j = 0; j < m.length;j++)
-                m[j] = 0;
-            m[i] = 1;
-            d = this.polyScal(q1,reste[l - 1]);
-            d = this.polyMul(d,m);
-            reste = this.polyAdd(d,reste);
-             l = reste.length;
-            if (l  == 0)
-            {
-                return new int[]{0};
+    public int[] polyDiv(int[] p, int[] q){
+        int [] res =p.clone();
+        for(int i=0;i<(p.length - q.length +1);i++){
+            int coef=res[i];
+            if (coef !=0){
+                for(int j=1;j<q.length;j++){
+                    if (q[j] !=0){
+                        res[i+j]^=gfMul(q[j],coef);
+                    }
+                }
             }
-         }
-         return reste;
-     }
-
+        }
+        return Arrays.copyOfRange(res,p.length-q.length+1,res.length);
+    }
 
      public int[] polyDeriv(int[] p)
      {

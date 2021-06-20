@@ -1,8 +1,19 @@
 public class Parcours21 extends Parcour {
 
     public Parcours21(String textACoder){
-        super(textACoder,21,26);
+        super(textACoder,21);
     }
+
+    @Override
+    protected void setLevelCorrection(int lenMessage){
+        if (lenMessage<=9){NbreRedondance=17;levelCorrection="H";}
+        else if (lenMessage<=13){NbreRedondance=13;levelCorrection="Q";}
+        else if (lenMessage<=16){NbreRedondance=10;levelCorrection="M";}
+        else if (lenMessage<=19){NbreRedondance=7;levelCorrection="L";}
+        else {throw new java.lang.RuntimeException("mot trop long");}
+    }
+
+    @Override
     protected void setQrData(){
         /* --- Variables --- */
         // positions de départ hardcodées (i,j), sens de parcours nombres de lignes (0:down, 1:up),
@@ -22,7 +33,30 @@ public class Parcours21 extends Parcour {
                 setDataDown(start_bit[0], start_bit[1], start_bit[3], start_bit[4]);
             }
         }
+        iterateur=0;
     }
+    protected void setMaskFormat(int i, int x, int y){ //applique le masque de format et positionne sur le qrcode à la plac x,y
+        String formatMask ="101010000010010";
+        qr_data[x][y]=((int) formatStr.charAt(i) -48)^((int) formatMask.charAt(i) -48);
+    }
+    protected void setMaskOnFormat(){
+        for (int i=0;i<=5;i++){
+            setMaskFormat(i,8,i);
+            setMaskFormat(i,(20-i),8);
+        }
+        for (int i=15;i<=20;i++){
+            setMaskFormat(i-6,8,i);
+            setMaskFormat(i-6,(20-i),8);
+        }
+        setMaskFormat(6,8,7);
+        setMaskFormat(7,8,8);
+        setMaskFormat(8,7,8);
+        setMaskFormat(6,14,8);
+        setMaskFormat(7,8,13);
+        setMaskFormat(8,8,14);
+    }
+
+    @Override
     protected void setFixe(){ //met un pixel noir sur les parties fixes d'un Qrcode21
         Oeuil(0,0);
         Oeuil(0,14);
@@ -35,18 +69,6 @@ public class Parcours21 extends Parcour {
         qr_data[6][12]=1;
         qr_data[13][8]=1;
     }
-    protected int[] getCorrectionValue(int formatbits) { // Renvoie le nombres d'octets de redondance
-        int[] correctionValue = new int[] {-1, -1};
-        int correctionLevel = formatbits >> 13;
 
-        //nb de bytes de redondance (total - bytes de données); nb de blocs
-        switch (correctionLevel) {
-            case 1 -> correctionValue = new int[]{7, 1}; //Low
-            case 0 -> correctionValue = new int[]{10, 1};
-            case 3 -> correctionValue = new int[]{13, 1};
-            case 2 -> correctionValue = new int[]{17, 1};
-        }
-        return correctionValue;
-    }
 
 }

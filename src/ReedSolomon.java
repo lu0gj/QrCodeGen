@@ -49,7 +49,6 @@ public class ReedSolomon {
         }
         reste = this.gf.polyDiv(res, generateur);
         int k = 0;
-        //System.out.println("Reste: " + Arrays.toString(reste));
         for (int i = reste.length - 1; i >= 0; i--) {
             res[res.length - 1 - k] = reste[i];
             k++;
